@@ -1,5 +1,5 @@
 <template>
-    <header class="bg-[#F1EFE7]">
+    <header class="bg-[#F1EFE7] shadow-lg">
         <img :src="imgUrl" alt="MINIMOIS LOGO" class="h-20">
     </header>
 </template>

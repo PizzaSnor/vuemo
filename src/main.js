@@ -1,4 +1,5 @@
 import './assets/main.css'
+import '../dist/output.css'
 
 import { getStorage } from 'firebase/storage'
 import { initializeApp } from 'firebase/app'
