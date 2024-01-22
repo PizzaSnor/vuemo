@@ -3,6 +3,8 @@ import '../dist/output.css'
 
 import { getStorage } from 'firebase/storage'
 import { initializeApp } from 'firebase/app'
+import { getFirestore } from 'firebase/firestore'; // Import as named export
+
 
 const firebaseConfig = {
     apiKey: 'AIzaSyBVESzUe1dEQMco3W603xU5tfkVlSDKCKk',
@@ -15,6 +17,7 @@ const firebaseConfig = {
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 const storage = getStorage(firebaseApp);
 
 import { createApp } from 'vue'
@@ -22,6 +25,8 @@ import App from './App.vue'
 import router from './router'
 
 const app = createApp(App);
+
+app.config.globalProperties.$db = db
 app.config.globalProperties.$storage = storage;
 
 app.use(router);
