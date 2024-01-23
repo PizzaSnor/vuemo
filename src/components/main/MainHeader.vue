@@ -3,7 +3,7 @@
         <img :src="imgUrl" alt="MINIMOIS LOGO" class="h-20">
         <div class="flex">
             <HeaderButton><RouterLink to="/Home">Home?</RouterLink></HeaderButton>
-            <HeaderButton><RouterLink to="/Gaminga">Gamingas?</RouterLink></HeaderButton>
+            <HeaderButton><RouterLink to="/CreateOrJoin">Gamingas?</RouterLink></HeaderButton>
         </div>
     </header>
 </template>

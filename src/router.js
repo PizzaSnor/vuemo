@@ -1,11 +1,11 @@
 import { createWebHistory, createRouter } from 'vue-router'
-import Gaminga from './domains/Gaminga/Gaminga.vue'
+import CreateOrJoin from './domains/Gaminga/CreateOrJoin.vue'
 import Home from './domains/Home/Home.vue'
 
 const routes = [
   { path: '/', redirect: '/Home' }, // Route for the Grasp component
   { path: '/Home', component: Home }, // Route for the Grasp component
-  { path: '/Gaminga', component: Gaminga}
+  { path: '/CreateOrJoin', component: CreateOrJoin}
   // Add more routes as needed
 ]
 

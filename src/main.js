@@ -3,7 +3,8 @@ import '../dist/output.css'
 
 import { getStorage } from 'firebase/storage'
 import { initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'; // Import as named export
+import { getFirestore } from 'firebase/firestore'
+import { getAuth } from 'firebase/auth'
 
 
 const firebaseConfig = {
@@ -19,6 +20,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const storage = getStorage(firebaseApp);
+const auth = getAuth(firebaseApp)
 
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -28,6 +30,7 @@ const app = createApp(App);
 
 app.config.globalProperties.$db = db
 app.config.globalProperties.$storage = storage;
+app.config.globalProperties.$auth = auth;
 
 app.use(router);
 app.mount('#app');

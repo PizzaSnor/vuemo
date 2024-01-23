@@ -1,5 +1,5 @@
 <template>
-    <div class="h-max bg-vBg">
+    <div class="min-h-screen bg-vBg">
         <slot></slot>
     </div>
 </template>
