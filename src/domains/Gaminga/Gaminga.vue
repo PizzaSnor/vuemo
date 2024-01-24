@@ -32,8 +32,8 @@ export default {
     JoinLobby,
     CreateLobby
   },
-  methods: {
-
+  mounted() {
+    document.title = "Huuuh"
   }
 }
 </script>

@@ -26,6 +26,9 @@ export default {
             user: null
         }
     },
+    mounted() {
+        document.title = "Gaminga!"
+    },
     methods: {
         async signInAnonymousHost() {
             signInAnonymously(this.$auth)

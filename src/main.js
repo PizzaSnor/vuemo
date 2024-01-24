@@ -32,6 +32,20 @@ app.config.globalProperties.$db = db
 app.config.globalProperties.$storage = storage;
 app.config.globalProperties.$auth = auth;
 
+router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+      const user = auth.currentUser;
+  
+      if (!user) {
+        next('/Login');
+      } else {
+        next();
+      }
+    } else {
+      next();
+    }
+  });
+
 app.use(router);
 app.mount('#app');
 

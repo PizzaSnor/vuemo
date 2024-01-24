@@ -1,9 +1,17 @@
 <template>
-    <header class="bg-vLight shadow-lg flex">
-        <img :src="imgUrl" alt="MINIMOIS LOGO" class="h-20">
+    <header class="flex justify-between bg-vLight shadow-lg">
         <div class="flex">
-            <HeaderButton><RouterLink to="/Home">Home?</RouterLink></HeaderButton>
-            <HeaderButton><RouterLink to="/CreateOrJoin">Gamingas?</RouterLink></HeaderButton>
+            <img :src="imgUrl" alt="MINIMOIS LOGO" class="h-20">
+            <div class="flex">
+                <HeaderButton><RouterLink to="/Home">Home?</RouterLink></HeaderButton>
+                <HeaderButton><RouterLink to="/CreateOrJoin">Gamingas?</RouterLink></HeaderButton>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <RouterLink to="/Profile" class="flex items-center">
+                <HeaderButton>My MiniMois</HeaderButton>
+                <img src="/images/profilesvg.png" alt="Profile" class="w-12 h-12 mr-4">
+            </RouterLink>
         </div>
     </header>
 </template>
