@@ -1,13 +1,16 @@
 <template>
     <div>
-        profile
-        <BasicButton @click="logout" class="bg-vBlue text-vLight">Logout</BasicButton>
+        <MainCard>
+            Dit is je profiel geniet ervan
+            <BasicButton @click="logout" class="bg-vBlue text-vLight">Logout</BasicButton>
+        </MainCard>
     </div>
 </template>
 
 <script>
 import { signOut } from "firebase/auth";
 import BasicButton from "@/components/Basic/Forms/BasicButton.vue";
+import MainCard from "@/components/Main/MainCard.vue";
 
 
 export default {
@@ -26,6 +29,6 @@ export default {
             });
         }
     },
-    components: { BasicButton }
+    components: { BasicButton, MainCard }
 }
 </script>

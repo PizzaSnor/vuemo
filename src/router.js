@@ -6,6 +6,7 @@ import Signup from './domains/Profile/Signup.vue'
 import Profile from './domains/Profile/Profile.vue'
 import CreateLobby from './domains/Gaminga/CreateLobby.vue'
 import JoinLobby from './domains/Gaminga/JoinLobby.vue'
+import Lobby from './domains/Gaminga/Lobby.vue'
 
 //MINIMOIS Routes
 const routes = [
@@ -17,6 +18,7 @@ const routes = [
   { path: '/Profile', component: Profile, meta: { requiresAuth: true } },
   { path: '/Login', component: Login },
   { path: '/Signup', component: Signup },
+  { path: '/Lobby/:id', component: Lobby, meta: { requiresAuth: true } }
 ]
 
 const router = createRouter({

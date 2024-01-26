@@ -9,7 +9,7 @@
         </div>
         <div class="flex items-center">
             <RouterLink to="/Profile" class="flex items-center">
-                <HeaderButton>My MiniMois</HeaderButton>
+                <HeaderButton class="hidden sm:flex">My MiniMois</HeaderButton>
                 <img src="/images/profilesvg.png" alt="Profile" class="w-12 h-12 mr-4">
             </RouterLink>
         </div>

@@ -6,7 +6,9 @@
             <ColorSelect @colorChanged="handleColorChange" class="w-1/4"></ColorSelect>
         </div>
         <div class="flex mt-2">
-            <button @click="createLobby" class="w-full py-4 bg-vGreen text-vLight text-2xl border border-black m-0.5 shadow-custom rounded-lg">Join!</button>
+            <button @click="createLobby" class="w-full py-4 bg-vGreen text-vLight text-2xl border border-black m-0.5 shadow-custom rounded-lg">
+                Create!
+            </button>
         </div>
     </MainCard>
 </template>
@@ -76,6 +78,7 @@ export default {
             });
 
             console.log('Lobby created with id: ' + lobbyId);
+            this.$router.push(`/Lobby/${lobbyId}`)
         }
     },
     computed: {
