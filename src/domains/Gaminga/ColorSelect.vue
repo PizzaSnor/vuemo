@@ -1,13 +1,13 @@
 <template>
     <div class="flex border min-w-fit border-black p-4 rounded-lg m-0.5 shadow-custom">
-        <div :class="circleBg" class="min-w-8 min-h-8 mr-2 border border-black rounded-full">
+        <div :class="'bg-' + selectedColor" class="min-w-8 min-h-8 mr-2 border border-black rounded-full">
         </div>
-        <select v-model="circleBg" class="bg-vLight outline-none">
-            <option selected value="bg-vGreen">Groen</option>
-            <option value="bg-vYellow">Geel</option>
-            <option value="bg-vPurple">Paars</option>
-            <option value="bg-vOrange">Oranje</option>
-            <option value="bg-vBlue">Blauw</option>
+        <select @change="emitColor" v-model="selectedColor" class="bg-vLight outline-none">
+            <option value="vGreen">Groen</option>
+            <option value="vYellow">Geel</option>
+            <option value="vPurple">Paars</option>
+            <option value="vOrange">Oranje</option>
+            <option value="vBlue">Blauw</option>
         </select>
     </div>
 </template>
@@ -17,7 +17,12 @@ export default {
     name: "ColorSelect.vue",
     data () {
         return {
-            circleBg: 'bg-Purple'
+            selectedColor: 'vPurple'
+        }
+    },
+    methods: {
+        emitColor() {
+            this.$emit('colorChanged', this.selectedColor)
         }
     }
 }

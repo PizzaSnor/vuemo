@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 import MainCard from '@/components/Main/MainCard.vue'
 import ProfileTitle from './ProfileTitle.vue'

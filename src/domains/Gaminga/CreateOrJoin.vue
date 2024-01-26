@@ -5,15 +5,13 @@
             <p class="text-lg font-medium text-vBlue tracking-tighter">Create or join a lobby</p>
         </div>
         <div class="flex justify-around">
-            <button @click="signInAnonymousHost" class="w-fit py-4 px-8 bg-vGreen text-vLight text-2xl border border-black m-0.5 shadow-custom rounded-lg">Create lobby!</button>
+            <button @click="create" class="w-fit py-4 px-8 bg-vGreen text-vLight text-2xl border border-black m-0.5 shadow-custom rounded-lg">Create lobby!</button>
             <button @click="join" class="w-fit py-4 px-8 bg-vGreen text-vLight text-2xl border border-black m-0.5 shadow-custom rounded-lg">Join existing!</button>
         </div>
     </MainCard>
 </template>
 
 <script>
-import { signInAnonymously } from "firebase/auth";
-
 import MainCard from '@/components/Main/MainCard.vue';
 
 export default {
@@ -30,16 +28,11 @@ export default {
         document.title = "Gaminga!"
     },
     methods: {
-        async signInAnonymousHost() {
-            signInAnonymously(this.$auth)
-            .then((user) => {
-            })
-        },
         join() {
-
+            this.$router.push('/JoinGaminga')
         },
         create() {
-
+            this.$router.push('/CreateGaminga')
         }
     }
 }

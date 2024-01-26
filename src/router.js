@@ -4,12 +4,16 @@ import Home from './domains/Home/Home.vue'
 import Login from './domains/Profile/Login.vue'
 import Signup from './domains/Profile/Signup.vue'
 import Profile from './domains/Profile/Profile.vue'
+import CreateLobby from './domains/Gaminga/CreateLobby.vue'
+import JoinLobby from './domains/Gaminga/JoinLobby.vue'
 
 //MINIMOIS Routes
 const routes = [
   { path: '/', redirect: '/Home' },
   { path: '/Home', component: Home },
   { path: '/CreateOrJoin', component: CreateOrJoin, meta: { requiresAuth: true } },
+  { path: '/CreateGaminga', component: CreateLobby, meta: { requiresAuth: true } },
+  { path: '/JoinGaminga', component: JoinLobby, meta: { requiresAuth: true } },
   { path: '/Profile', component: Profile, meta: { requiresAuth: true } },
   { path: '/Login', component: Login },
   { path: '/Signup', component: Signup },

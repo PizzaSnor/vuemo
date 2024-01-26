@@ -4,7 +4,7 @@ import '../dist/output.css'
 import { getStorage } from 'firebase/storage'
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
-import { getAuth } from 'firebase/auth'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 
 const firebaseConfig = {
@@ -28,11 +28,12 @@ import router from './router'
 
 const app = createApp(App);
 
-app.config.globalProperties.$db = db
-app.config.globalProperties.$storage = storage;
-app.config.globalProperties.$auth = auth;
+onAuthStateChanged(getAuth(firebaseApp), (user) => {
+  app.config.globalProperties.$db = getFirestore(firebaseApp);
+  app.config.globalProperties.$storage = getStorage(firebaseApp);
+  app.config.globalProperties.$auth = getAuth(firebaseApp);
 
-router.beforeEach((to, from, next) => {
+  router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
       const user = auth.currentUser;
   
@@ -46,8 +47,9 @@ router.beforeEach((to, from, next) => {
     }
   });
 
-app.use(router);
-app.mount('#app');
+  app.use(router);
+  app.mount('#app');
+});
 
 
 
