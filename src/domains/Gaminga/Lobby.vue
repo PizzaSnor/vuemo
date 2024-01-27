@@ -2,7 +2,7 @@
     <div class="flex  justify-center flex-col sm:flex-row">
         <MainCard>
             <GameTitle>Lobby #{{ this.lobbyId }}</GameTitle>
-            <Chat>
+            <Chat ref="chatContainer">
                 <ChatBubble v-for="chat in chatMessages" :username="chat.name" :color="chat.color" :reversed="this.uid == chat.userId">{{ chat.content }}</ChatBubble>
             </Chat>
             <form @submit.prevent="sendChatMessage" class="flex m-0.5">
@@ -12,10 +12,11 @@
         </MainCard>
         <div class="sm:ml-4">
             <MiniCard>
-                <Heading2 class="text-center">Spelers: {{  }}/6</Heading2>
+                <Heading2 v-if="participants" class="text-center">Spelers: {{ participants.length }}/6</Heading2>
+                <Heading2 v-else class="text-center">Laden..</Heading2>
                 <PlayerTile v-for="participant in participants" :class="`text-${participant.color}`">{{ participant.username }}</PlayerTile>
             </MiniCard>
-            <MiniCard >
+            <MiniCard v-if="host == uid">
                 <Heading2 class="text-center">Jij bent de host!</Heading2>
             </MiniCard>
         </div>
@@ -49,20 +50,22 @@ export default {
 },
     data() {
         return {
+            host: null,
             lobbyId: this.$route.params.id,
             lobby: null,
             participants: null,
             chatMessages: [],
             outboundMessage: null,
             chatRef: null,
-            unsubscribe: null,
             uid: null,
             you: null,
+            unsubscribeMessages: null,
+            unsubscribeParticipants: null,
         };
     },
     beforeDestroy() {
-        if (this.unsubscribe) {
-            this.unsubscribe();
+        if (this.unsubscribeMessages) {
+            this.unsubscribeMessages();
         }
     },
     mounted() {
@@ -72,6 +75,15 @@ export default {
             }
         })
         this.findLobby()
+
+    },
+    watch: {
+        chatMessages(newMessages) {
+        this.$nextTick(() => {
+            // Use $nextTick to ensure the DOM has been updated before scrolling
+            this.scrollToBottom();
+        });
+        },
     },
     methods: {
         async findLobby() {
@@ -82,12 +94,19 @@ export default {
                 const participantsRef = collection(docRef, "participants");
                 const participantsSnapshot = await getDocs(participantsRef);
 
+                const lobbyData = this.lobby.data()
+                this.host = lobbyData.creatorUserId
+
                 this.participants = participantsSnapshot.docs.map((doc) => doc.data());
 
-                // Find the participant with the same ID as this.uid
                 this.you = this.participants.find(participant => participant.userId === this.uid);
 
-                this.getChatMessages();
+                if (this.you) {
+                    this.getChatMessages();
+                    this.scrollToBottom();
+                } else {
+                    this.$router.push({ path: '/JoinGaminga', query: { lobbyId: this.lobbyId } });
+                }
             } else {
                 this.$router.push('/JoinGaminga');
             }
@@ -95,7 +114,7 @@ export default {
         async getChatMessages() {
             const chatRef = collection(this.lobby.ref, 'chat');
 
-            this.unsubscribe = onSnapshot(query(chatRef, orderBy('time')), (snapshot) => {
+            this.unsubscribeMessages = onSnapshot(query(chatRef, orderBy('time')), (snapshot) => {
                 this.chatMessages = snapshot.docs.map(doc => {
                 return {
                     id: doc.id,
@@ -104,7 +123,7 @@ export default {
                 });
             });
         },
-        async sendChatMessage() {
+        async sendChatMessage(server) {
             if (this.outboundMessage) {
                 const chatRef = collection(this.lobby.ref, 'chat');
 
@@ -115,9 +134,14 @@ export default {
                     userId: this.uid,
                     color: this.you.color
                 })
+
+                this.scrollToBottom()
             }
 
             this.outboundMessage = ''
+        },
+        scrollToBottom() {
+            this.$refs.chatContainer.$el.scrollTop = this.$refs.chatContainer.$el.scrollHeight;
         }
     },
 }

@@ -1,12 +1,14 @@
 <template>
     <MainCard class="mx-auto">
-      <ProfileTitle>Maak een account op MiniMois</ProfileTitle>
-      <input v-model="email" type="email" placeholder="Email" class="m-0.5 w-full px-4 py-4 outline-none shadow-custom text-vBlue bg-vLight border border-black text-2xl font-medium tracking-tighter rounded-lg placeholder-custom">
-      <input v-model="password" type="text" placeholder="Password" class="m-0.5 w-full px-4 py-4 outline-none shadow-custom text-vBlue bg-vLight border border-black text-2xl font-medium tracking-tighter rounded-lg placeholder-custom">
-      <div class="flex items-center justify-between">
-        <p class="ml-1">Al een account? <RouterLink to="/Login" class="mr-8 underline">Login!</RouterLink></p>
-        <BasicButton @click="createUser" class="w-1/3 bg-vGreen text-vLight">Sign Up</BasicButton>
-      </div>
+        <form @submit.prevent="createUser">
+            <ProfileTitle>Maak een account op MiniMois</ProfileTitle>
+            <input v-model="email" type="email" placeholder="Email" class="m-0.5 w-full px-4 py-4 outline-none shadow-custom text-vBlue bg-vLight border border-black text-2xl font-medium tracking-tighter rounded-lg placeholder-custom">
+            <input v-model="password" type="text" placeholder="Password" class="m-0.5 w-full px-4 py-4 outline-none shadow-custom text-vBlue bg-vLight border border-black text-2xl font-medium tracking-tighter rounded-lg placeholder-custom">
+            <div class="flex items-center justify-between">
+                <p class="ml-1">Al een account? <RouterLink to="/Login" class="mr-8 underline">Login!</RouterLink></p>
+                <BasicButton class="w-1/3 bg-vGreen text-vLight">Sign Up</BasicButton>
+            </div>
+        </form>
     </MainCard>
   </template>
   

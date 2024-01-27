@@ -51,7 +51,6 @@ export default {
         onAuthStateChanged(this.$auth, (user) => {
             if (user) {
                 this.userId = user.uid
-                console.log(user.uid)
             }
         })
     },
@@ -60,7 +59,6 @@ export default {
             this.selectedColor = color
         },
         async createLobby() {
-            console.log(this.userId);
             const lobbyId = Math.floor(100000 + Math.random() * 900000).toString();
 
             const lobbyRef = doc(this.$db, 'lobbies', lobbyId);
@@ -86,7 +84,6 @@ export default {
                 content: 'Server created.',
                 time: serverTimestamp()
             };
-            
 
             await addDoc(ChatCollectionRef, ChatData);
 
