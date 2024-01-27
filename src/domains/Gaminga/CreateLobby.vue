@@ -15,7 +15,7 @@
 
 <script>
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, addDoc, serverTimestamp, collection } from 'firebase/firestore';
 
 import ColorSelect from './ColorSelect.vue';
 import MainCard from '@/components/Main/MainCard.vue';
@@ -77,7 +77,19 @@ export default {
                 color: this.selectedColor,
             });
 
-            console.log('Lobby created with id: ' + lobbyId);
+            const ChatCollectionRef = collection(lobbyRef, 'chat');
+
+            const ChatData = {
+                userId: 1,
+                name: 'Server',
+                color: 'vBlue',
+                content: 'Server created.',
+                time: serverTimestamp()
+            };
+            
+
+            await addDoc(ChatCollectionRef, ChatData);
+
             this.$router.push(`/Lobby/${lobbyId}`)
         }
     },

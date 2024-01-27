@@ -18,6 +18,7 @@ module.exports = {
         vGreen: '#81b29a',
         vYellow: '#f2cc8f',
         vPurple: '#b264cd',
+        vRed: '#7a2c2a',
         vBg: '#bfbbae'
       },
       boxShadow: {
