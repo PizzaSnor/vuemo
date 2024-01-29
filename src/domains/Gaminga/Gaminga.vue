@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col items-center">
-      <MainCard id="CreateOrJoin">
+      <MainCard>
         Spelverloop
       </MainCard>
     </div>
@@ -20,8 +20,13 @@ export default {
     CreateOrJoin,
     GameTitle,
   },
+  data() {
+    return {
+      gameId: this.$route.params.id,
+    }
+  },
   mounted() {
-    document.title = "Huuuh"
+    document.title = "Gaminga!"
   }
 }
 </script>

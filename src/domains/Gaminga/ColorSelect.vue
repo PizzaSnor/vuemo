@@ -8,6 +8,7 @@
             <option value="vPurple">Paars</option>
             <option value="vOrange">Oranje</option>
             <option value="vBlue">Blauw</option>
+            <option value="vRed">Rood</option>
         </select>
     </div>
 </template>
@@ -17,7 +18,7 @@ export default {
     name: "ColorSelect.vue",
     data () {
         return {
-            selectedColor: 'vPurple'
+            selectedColor: 'vBlue'
         }
     },
     methods: {

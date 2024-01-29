@@ -73,12 +73,12 @@ export default {
                 userId: this.userId,
                 username: this.username,
                 color: this.selectedColor,
+                partId: 1,
             });
 
             const ChatCollectionRef = collection(lobbyRef, 'chat');
-
             const ChatData = {
-                userId: 1,
+                userId: 'server',
                 name: 'Server',
                 color: 'vBlue',
                 content: 'Server created.',

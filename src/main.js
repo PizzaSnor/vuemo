@@ -27,38 +27,30 @@ import router from './router';
 
 const app = createApp(App);
 
-// Add Vue global properties
-app.config.globalProperties.$db = getFirestore(firebaseApp);
-app.config.globalProperties.$storage = getStorage(firebaseApp);
-app.config.globalProperties.$auth = getAuth(firebaseApp);
+app.config.globalProperties.$db = db;
+app.config.globalProperties.$storage = storage;
+app.config.globalProperties.$auth = auth;
 
-// Create a promise that resolves when the authentication state is checked
 const authCheckPromise = new Promise((resolve) => {
   onAuthStateChanged(auth, (user) => {
     resolve(user);
   });
 });
 
-// Before resolving the app, check if the user is authenticated
 router.beforeResolve(async (to, from, next) => {
-  // Wait for the authentication check to complete
   const user = await authCheckPromise;
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!user) {
-      // If the user is not authenticated, redirect to the login page
       next({ path: '/Login', query: { redirect: to.fullPath } });
     } else {
-      // If the user is authenticated, proceed with the navigation
       next();
     }
   } else {
-    // For routes that do not require authentication, proceed with the navigation
     next();
   }
 });
 
-// Mount the app once the authentication state has been checked
 authCheckPromise.then(() => {
   app.use(router);
   app.mount('#app');

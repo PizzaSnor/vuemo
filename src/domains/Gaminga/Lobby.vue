@@ -18,6 +18,8 @@
             </MiniCard>
             <MiniCard v-if="host == uid">
                 <Heading2 class="text-center">Jij bent de host!</Heading2>
+                <BasicButton @click="startGame" class="bg-vGreen text-vLight w-full">Start!</BasicButton>
+                <p>{{ host }}</p>
             </MiniCard>
         </div>
     </div>
@@ -25,7 +27,7 @@
 
 <script>
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, getDocs, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from 'firebase/firestore';
 
 import PlayerTile from './PlayerTile.vue';
 import ChatBubble from './Chat/ChatBubble.vue';
@@ -35,6 +37,7 @@ import MiniCard from '@/components/Main/MiniCard.vue';
 import Heading2 from '@/components/Basic/Heading/Heading2.vue'
 import Chat from './Chat/Chat.vue';
 import ChatSend from './Chat/ChatSend.vue';
+import BasicButton from '@/components/Basic/Forms/BasicButton.vue';
 
 export default {
     name: "Lobby",
@@ -46,12 +49,14 @@ export default {
     MiniCard,
     Heading2,
     Chat,
-    ChatSend
+    ChatSend,
+    BasicButton
 },
     data() {
         return {
             host: null,
             lobbyId: this.$route.params.id,
+            lobbyRef: null,
             lobby: null,
             participants: null,
             chatMessages: [],
@@ -67,6 +72,9 @@ export default {
         if (this.unsubscribeMessages) {
             this.unsubscribeMessages();
         }
+        if (this.unsubscribeParticipants) {
+            this.unsubscribeParticipants()
+        }
     },
     mounted() {
         onAuthStateChanged(this.$auth, (user) => {
@@ -79,55 +87,64 @@ export default {
     },
     watch: {
         chatMessages(newMessages) {
-        this.$nextTick(() => {
-            // Use $nextTick to ensure the DOM has been updated before scrolling
-            this.scrollToBottom();
-        });
+            this.$nextTick(() => {
+                this.scrollToBottom();
+            });
         },
     },
     methods: {
         async findLobby() {
-            const docRef = doc(this.$db, "lobbies", this.lobbyId);
-            this.lobby = await getDoc(docRef);
+            this.lobbyRef = doc(this.$db, "lobbies", this.lobbyId);
+            this.lobby = await getDoc(this.lobbyRef);
 
             if (this.lobby.exists()) {
-                const participantsRef = collection(docRef, "participants");
-                const participantsSnapshot = await getDocs(participantsRef);
+                const participantsRef = collection(this.lobbyRef, "participants");
+                this.lobbyData = this.lobby.data();
+                this.host = this.lobbyData.creatorUserId;
+                
+                this.unsubscribeParticipants = onSnapshot(participantsRef, (snapshot) => {
 
-                const lobbyData = this.lobby.data()
-                this.host = lobbyData.creatorUserId
+                    this.participants = snapshot.docs.map((doc) => doc.data());
 
-                this.participants = participantsSnapshot.docs.map((doc) => doc.data());
+                    this.you = this.participants.find((participant) => participant.userId === this.uid);
 
-                this.you = this.participants.find(participant => participant.userId === this.uid);
-
-                if (this.you) {
-                    this.getChatMessages();
-                    this.scrollToBottom();
-                } else {
-                    this.$router.push({ path: '/JoinGaminga', query: { lobbyId: this.lobbyId } });
-                }
+                    if (this.you) {
+                        this.getChatMessages();
+                        this.scrollToBottom();
+                    } else {
+                        this.$router.push({ path: '/JoinGaminga', query: { lobbyId: this.lobbyId } });
+                    }
+                });
             } else {
                 this.$router.push('/JoinGaminga');
             }
         },
         async getChatMessages() {
-            const chatRef = collection(this.lobby.ref, 'chat');
+            this.chatRef = collection(this.lobby.ref, 'chat');
 
-            this.unsubscribeMessages = onSnapshot(query(chatRef, orderBy('time')), (snapshot) => {
+            this.unsubscribeMessages = onSnapshot(query(this.chatRef, orderBy('time')), (snapshot) => {
                 this.chatMessages = snapshot.docs.map(doc => {
-                return {
-                    id: doc.id,
-                    ...doc.data(),
-                };
+                    /*
+                    MAD GOOF!!!!!!!! Niet veilig maar fak die tock.
+                    Zehema werkt goed.
+                    */
+                    const docData = doc.data()
+                    if(docData.content == "Go!" && docData.userId == "server") {
+                        this.redirectToGame()
+                    }
+                    return {
+                        id: doc.id,
+                        ...doc.data(),
+                    };
                 });
             });
         },
-        async sendChatMessage(server) {
+        async sendChatMessage() {
             if (this.outboundMessage) {
-                const chatRef = collection(this.lobby.ref, 'chat');
+                this.chatRef = collection(this.lobby.ref, 'chat');
 
-                await addDoc(chatRef, {
+     
+                await addDoc(this.chatRef, {
                     content: this.outboundMessage,
                     time: serverTimestamp(),
                     name: this.you.username,
@@ -140,6 +157,51 @@ export default {
 
             this.outboundMessage = ''
         },
+        /*
+        * Start game, create stories and redirect logic
+        */
+        async sendServerMessage(content) {
+            await addDoc(this.chatRef, {
+                    content: content,
+                    time: serverTimestamp(),
+                    name: 'Server',
+                    userId: 'server',
+                    color: 'vBlue'
+                })
+
+            this.scrollToBottom()
+        },
+        async startGame() {
+            let countDown = 4;
+
+            this.sendServerMessage('Game starts in: 5', this.chatRef)
+
+            let gameTimer = setInterval(() => {
+                this.sendServerMessage(countDown, this.chatRef)
+
+                if (countDown == 1) {
+                    clearInterval(gameTimer)  
+                    this.createStories()
+                    this.sendServerMessage('Go!', this.chatRef)
+                } 
+                countDown--
+            }, 1000);
+        },
+        async createStories() {
+            for (const [key, participant] of this.participants.entries()) {
+                const storyRef = doc(this.lobbyRef, 'stories', 'story' + key);
+                await setDoc(storyRef, {
+                    storyName: participant.username + '\'s verhaal',
+                    color: participant.color,
+                });
+            }
+        },
+        async redirectToGame() {
+            this.$router.push(`/Gaminga/${this.lobbyId}`)
+        },
+        /*
+        * End of start game, create stories and redirect logic
+        */
         scrollToBottom() {
             this.$refs.chatContainer.$el.scrollTop = this.$refs.chatContainer.$el.scrollHeight;
         }

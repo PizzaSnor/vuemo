@@ -16,7 +16,7 @@
 
 <script>
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
 
 
 import MainCard from '@/components/Main/MainCard.vue';
@@ -70,21 +70,28 @@ export default {
 
             if (lobbyRef) {
                 if (!this.selectedColor) {
-                    this.selectedColor = 'vBlue'
+                    this.selectedColor = 'vBlue';
                 }
-                const participantRef = doc(lobbyRef, 'participants', this.userId);
+
+                const participantsCollectionRef = collection(lobbyRef, 'participants');
+
+                // Fetch current participants to get the length
+                const participantsSnapshot = await getDocs(participantsCollectionRef);
+                const participantsLength = participantsSnapshot.size;
+
+                const participantRef = doc(participantsCollectionRef, this.userId);
+
                 await setDoc(participantRef, {
                     userId: this.userId,
                     username: this.username,
                     color: this.selectedColor,
+                    partId: participantsLength + 1,
                 });
 
-                this.$router.push(`/Lobby/${this.lobbyId}`)
+                this.$router.push(`/Lobby/${this.lobbyId}`);
             } else {
                 console.log('That lobby dont even exists jo');
             }
-
-
         }
     },
     computed: {
