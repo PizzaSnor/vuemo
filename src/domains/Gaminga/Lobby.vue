@@ -19,7 +19,6 @@
             <MiniCard v-if="host == uid">
                 <Heading2 class="text-center">Jij bent de host!</Heading2>
                 <BasicButton @click="startGame" class="bg-vGreen text-vLight w-full">Start!</BasicButton>
-                <p>{{ host }}</p>
             </MiniCard>
         </div>
     </div>
@@ -27,7 +26,7 @@
 
 <script>
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, setDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, updateDoc } from 'firebase/firestore';
 
 import PlayerTile from './PlayerTile.vue';
 import ChatBubble from './Chat/ChatBubble.vue';
@@ -83,7 +82,6 @@ export default {
             }
         })
         this.findLobby()
-
     },
     watch: {
         chatMessages(newMessages) {
@@ -96,10 +94,10 @@ export default {
         async findLobby() {
             this.lobbyRef = doc(this.$db, "lobbies", this.lobbyId);
             this.lobby = await getDoc(this.lobbyRef);
+            this.lobbyData = this.lobby.data();
 
-            if (this.lobby.exists()) {
+            if (this.lobby.exists() && this.lobbyData.canJoin) {
                 const participantsRef = collection(this.lobbyRef, "participants");
-                this.lobbyData = this.lobby.data();
                 this.host = this.lobbyData.creatorUserId;
                 
                 this.unsubscribeParticipants = onSnapshot(participantsRef, (snapshot) => {
@@ -158,7 +156,7 @@ export default {
             this.outboundMessage = ''
         },
         /*
-        * Start game, create stories and redirect logic
+        * Start game, create stories logic
         */
         async sendServerMessage(content) {
             await addDoc(this.chatRef, {
@@ -172,19 +170,21 @@ export default {
             this.scrollToBottom()
         },
         async startGame() {
-            let countDown = 4;
-
+            this.changeJoinability()
             this.sendServerMessage('Game starts in: 5', this.chatRef)
+
+            let countDown = 4;
 
             let gameTimer = setInterval(() => {
                 this.sendServerMessage(countDown, this.chatRef)
 
-                if (countDown == 1) {
+                countDown--
+
+                if (countDown == -1) {
                     clearInterval(gameTimer)  
                     this.createStories()
                     this.sendServerMessage('Go!', this.chatRef)
                 } 
-                countDown--
             }, 1000);
         },
         async createStories() {
@@ -199,8 +199,13 @@ export default {
         async redirectToGame() {
             this.$router.push(`/Gaminga/${this.lobbyId}`)
         },
+        async changeJoinability() {
+            await updateDoc(this.lobbyRef, {
+                canJoin: false
+            });
+        },
         /*
-        * End of start game, create stories and redirect logic
+        * End of start game, create stories logic
         */
         scrollToBottom() {
             this.$refs.chatContainer.$el.scrollTop = this.$refs.chatContainer.$el.scrollHeight;
