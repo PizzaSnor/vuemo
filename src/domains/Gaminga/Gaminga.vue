@@ -8,7 +8,7 @@
 
 <script>
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, setDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocs, setDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, updateDoc } from 'firebase/firestore';
 
 import StoryPage from './StoryPage.vue';
 import MainCard from '@/components/Main/MainCard.vue';
@@ -29,6 +29,9 @@ export default {
             lobby: null,
             lobbyData: null,
             lobbyRef: null,
+            stories: null,
+            currentStory: null,
+            currentDialogue: null,
             host: null,
             participants: null,
             unsubscribeParticipants: null,
@@ -51,9 +54,9 @@ export default {
     },
     methods: {
         async syncLobby() {
-            this.lobbyRef = doc(this.$db, "lobbies", this.gameId);
-            this.lobby = await getDoc(this.lobbyRef);
-            this.lobbyData = this.lobby.data();
+            this.lobbyRef = doc(this.$db, "lobbies", this.gameId)
+            this.lobby = await getDoc(this.lobbyRef)
+            this.lobbyData = this.lobby.data()
 
             if (this.lobby.exists()) {
                 const participantsRef = collection(this.lobbyRef, "participants");
@@ -63,11 +66,41 @@ export default {
 
                     this.participants = snapshot.docs.map((doc) => doc.data());
 
-                    this.you = this.participants.find((participant) => participant.userId === this.uid);
+                    this.you = this.participants.find((participant) => participant.userId === this.uid)
+
+                    if (!this.you) {
+                        this.yeetBack('/JoinGaminga')
+                    }
+
+                    if(this.lobbyData.round == 0) {
+                        console.log('cabround')
+                        this.asignStory()
+                    }
                 });
             } else {
-                this.$router.push('/JoinGaminga');
+                this.yeetBack('/JoinGaminga')
             }
+        },
+        async asignStory() {
+            const storyId = `story${this.you.partId}`;
+            const storyRef = doc(this.lobbyRef, 'stories', storyId);
+            this.currentStory = await getDoc(storyRef);
+
+            if (this.currentStory.exists()) {
+                const dialogueCollectionRef = collection(storyRef, 'dialogue');
+                const dialogueSnapshot = await getDocs(dialogueCollectionRef);
+                this.currentDialogue = dialogueSnapshot.docs.map(doc => doc.data());
+            } else {
+                // Handle the case where the story doesn't exist
+                console.error(`Error: Story ${storyId} does not exist.`);
+            }
+            console.log(this.currentDialogue)
+        },
+        async addLineToStory() {
+
+        },
+        yeetBack(route) {
+            this.$router.push(route);
         }
     }
 }

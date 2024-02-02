@@ -66,7 +66,8 @@ export default {
             await setDoc(lobbyRef, {
                 createdAt: serverTimestamp(),
                 creatorUserId: this.userId,
-                canJoin: true
+                canJoin: true,
+                round: 0
             });
 
             const participantRef = doc(lobbyRef, 'participants', this.userId);

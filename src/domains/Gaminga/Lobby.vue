@@ -188,12 +188,19 @@ export default {
             }, 1000);
         },
         async createStories() {
+            let i = 0
             for (const [key, participant] of this.participants.entries()) {
                 const storyRef = doc(this.lobbyRef, 'stories', 'story' + key);
                 await setDoc(storyRef, {
                     storyName: participant.username + '\'s verhaal',
                     color: participant.color,
+                    partId: i
                 });
+                const dialogueCollectionRef = collection(storyRef, 'dialogue');
+                await addDoc(dialogueCollectionRef, {
+                    partId: i
+                 });
+                i++
             }
         },
         async redirectToGame() {
