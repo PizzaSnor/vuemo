@@ -67,7 +67,8 @@ export default {
                 createdAt: serverTimestamp(),
                 creatorUserId: this.userId,
                 canJoin: true,
-                round: 0
+                round: 1,
+                roundAmounts: 6
             });
 
             const participantRef = doc(lobbyRef, 'participants', this.userId);

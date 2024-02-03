@@ -128,7 +128,9 @@ export default {
                     */
                     const docData = doc.data()
                     if(docData.content == "Go!" && docData.userId == "server") {
-                        this.redirectToGame()
+                        setTimeout(() => {
+                            this.redirectToGame()
+                        }, 2000)
                     }
                     return {
                         id: doc.id,
@@ -171,6 +173,7 @@ export default {
         },
         async startGame() {
             this.changeJoinability()
+            this.createStories()
             this.sendServerMessage('Game starts in: 5', this.chatRef)
 
             let countDown = 4;
@@ -180,27 +183,57 @@ export default {
 
                 countDown--
 
-                if (countDown == -1) {
+                if (countDown == 0) {
                     clearInterval(gameTimer)  
-                    this.createStories()
+                    this.asignRounds()
                     this.sendServerMessage('Go!', this.chatRef)
                 } 
             }, 1000);
         },
         async createStories() {
-            let i = 0
+            let i = 0;
+
+            console.log("RUAAAAAAH");
             for (const [key, participant] of this.participants.entries()) {
                 const storyRef = doc(this.lobbyRef, 'stories', 'story' + key);
                 await setDoc(storyRef, {
                     storyName: participant.username + '\'s verhaal',
                     color: participant.color,
-                    partId: i
+                    partId: i,
                 });
+
                 const dialogueCollectionRef = collection(storyRef, 'dialogue');
                 await addDoc(dialogueCollectionRef, {
-                    partId: i
-                 });
-                i++
+                    partId: i,
+                });
+
+                i++;
+            }
+        },
+        async asignRounds() {
+
+            const totalRounds = this.lobbyData.roundAmounts; 
+            const totalStories = this.participants.length;
+            const roundsCollectionRef = collection(this.lobbyRef, "rounds");
+
+            for (let roundNumber = 1; roundNumber <= totalRounds; roundNumber++) {
+                const roundRef = doc(roundsCollectionRef, `round${roundNumber}`);
+                const participantsCollectionRef = collection(roundRef, "participants");
+
+                for (let participantIndex = 0; participantIndex < this.participants.length; participantIndex++) {
+                    // NIET AANRAKEN!1! Holy grail van het asignen van stories
+                    const storyIndex = (participantIndex + roundNumber - 1) % totalStories;
+                    // !!
+
+                    const senderParticipantIndex = (participantIndex - 1 + this.participants.length) % this.participants.length;
+                    const sender = this.participants[senderParticipantIndex];
+
+                    const participantRef = doc(participantsCollectionRef, this.participants[participantIndex].userId);
+                    await setDoc(participantRef, {
+                        storyId: `story${storyIndex}`,
+                        senderId: sender.userId,
+                    });
+                }
             }
         },
         async redirectToGame() {
@@ -212,7 +245,7 @@ export default {
             });
         },
         /*
-        * End of start game, create stories logic
+        * End of start game and create stories logic
         */
         scrollToBottom() {
             this.$refs.chatContainer.$el.scrollTop = this.$refs.chatContainer.$el.scrollHeight;

@@ -72,30 +72,33 @@ export default {
                         this.yeetBack('/JoinGaminga')
                     }
 
-                    if(this.lobbyData.round == 0) {
+                    if(this.lobbyData.round == 1) {
                         console.log('cabround')
-                        this.asignStory()
+                        // this.asignStory()
                     }
                 });
             } else {
                 this.yeetBack('/JoinGaminga')
             }
         },
-        async asignStory() {
-            const storyId = `story${this.you.partId}`;
-            const storyRef = doc(this.lobbyRef, 'stories', storyId);
-            this.currentStory = await getDoc(storyRef);
+        async getRound() {
 
-            if (this.currentStory.exists()) {
-                const dialogueCollectionRef = collection(storyRef, 'dialogue');
-                const dialogueSnapshot = await getDocs(dialogueCollectionRef);
-                this.currentDialogue = dialogueSnapshot.docs.map(doc => doc.data());
-            } else {
-                // Handle the case where the story doesn't exist
-                console.error(`Error: Story ${storyId} does not exist.`);
-            }
-            console.log(this.currentDialogue)
         },
+        // async asignStory() {
+        //     const storyId = `story${this.you.partId}`;
+        //     const storyRef = doc(this.lobbyRef, 'stories', storyId);
+        //     this.currentStory = await getDoc(storyRef);
+
+        //     if (this.currentStory.exists()) {
+        //         const dialogueCollectionRef = collection(storyRef, 'dialogue');
+        //         const dialogueSnapshot = await getDocs(dialogueCollectionRef);
+        //         this.currentDialogue = dialogueSnapshot.docs.map(doc => doc.data());
+        //     } else {
+        //         // Handle the case where the story doesn't exist
+        //         console.error(`Error: Story ${storyId} does not exist.`);
+        //     }
+        //     console.log(this.currentDialogue)
+        // },
         async addLineToStory() {
 
         },
