@@ -158,7 +158,7 @@ export default {
             this.outboundMessage = ''
         },
         /*
-        * Start game, create stories logic
+        * Start game, create stories, dialog and rounds logic
         */
         async sendServerMessage(content) {
             await addDoc(this.chatRef, {
@@ -191,9 +191,8 @@ export default {
             }, 1000);
         },
         async createStories() {
-            let i = 0;
+            let i = 1;
 
-            console.log("RUAAAAAAH");
             for (const [key, participant] of this.participants.entries()) {
                 const storyRef = doc(this.lobbyRef, 'stories', 'story' + key);
                 await setDoc(storyRef, {
@@ -204,7 +203,12 @@ export default {
 
                 const dialogueCollectionRef = collection(storyRef, 'dialogue');
                 await addDoc(dialogueCollectionRef, {
+                    timestamp: serverTimestamp(),
+                    content: "Begin van " + participant.username + '\'s verhaal',
                     partId: i,
+                    userId: participant.userId,
+                    username: participant.username,
+                    color: participant.color
                 });
 
                 i++;
@@ -231,7 +235,8 @@ export default {
                     const participantRef = doc(participantsCollectionRef, this.participants[participantIndex].userId);
                     await setDoc(participantRef, {
                         storyId: `story${storyIndex}`,
-                        senderId: sender.userId,
+                        senderId: sender.partId,
+                        partId: this.participants[participantIndex].partId
                     });
                 }
             }
@@ -245,10 +250,12 @@ export default {
             });
         },
         /*
-        * End of start game and create stories logic
+        * End of start game + logic
         */
         scrollToBottom() {
-            this.$refs.chatContainer.$el.scrollTop = this.$refs.chatContainer.$el.scrollHeight;
+            if (this.$refs.chatContainer.$el) {
+                this.$refs.chatContainer.$el.scrollTop = this.$refs.chatContainer.$el.scrollHeight;
+            }
         }
     },
 }
