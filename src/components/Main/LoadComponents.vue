@@ -10,7 +10,7 @@
 
 <script>
 
-// This component is purely for loading tailwind classes
+// This component is purely for loading tailwind classes that are dynamically assigned
 export default {
     name: "LoadComponents"
 }

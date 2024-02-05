@@ -2,13 +2,15 @@
     <div class="flex  justify-center flex-col sm:flex-row">
         <MainCard>
             <GameTitle>Lobby #{{ this.lobbyId }}</GameTitle>
-            <Chat ref="chatContainer">
-                <ChatBubble v-for="chat in chatMessages" :username="chat.name" :color="chat.color" :reversed="this.uid == chat.userId">{{ chat.content }}</ChatBubble>
-            </Chat>
-            <form @submit.prevent="sendChatMessage" class="flex m-0.5">
-                <input v-model="outboundMessage" type="text" placeholder="Typ iets controversieels..." class="flex items-center w-full bg-vLight outline-none px-4 m-0.5 max-h-min shadow-custom border border-black text-xl font-bold rounded-l-lg rounded-r-sm placeholder-custom">
-                <ChatSend>Stuur</ChatSend>
-            </form>
+            <div class="flex flex-col justify-between">
+                <Chat ref="chatContainer" class="mb-">
+                    <ChatBubble v-for="chat in chatMessages" :username="chat.name" :color="chat.color" :reversed="this.uid == chat.userId">{{ chat.content }}</ChatBubble>
+                </Chat>
+                <form @submit.prevent="sendChatMessage" class="flex m-0.5 mb-0">
+                    <input v-model="outboundMessage" type="text" placeholder="Typ iets controversieels..." class="flex items-center w-full bg-vLight outline-none px-4 m-0.5 max-h-min shadow-custom border border-black text-xl font-bold rounded-l-lg rounded-r-sm placeholder-custom">
+                    <ChatSend>Stuur</ChatSend>
+                </form>
+            </div>
         </MainCard>
         <div class="sm:ml-4">
             <MiniCard>
@@ -65,6 +67,7 @@ export default {
             you: null,
             unsubscribeMessages: null,
             unsubscribeParticipants: null,
+            active: true,
         };
     },
     beforeDestroy() {
@@ -242,6 +245,7 @@ export default {
             }
         },
         async redirectToGame() {
+            this.active = false
             this.$router.push(`/Gaminga/${this.lobbyId}`)
         },
         async changeJoinability() {
@@ -253,7 +257,7 @@ export default {
         * End of start game + logic
         */
         scrollToBottom() {
-            if (this.$refs.chatContainer.$el) {
+            if (this.active) {
                 this.$refs.chatContainer.$el.scrollTop = this.$refs.chatContainer.$el.scrollHeight;
             }
         }

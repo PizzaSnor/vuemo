@@ -77,6 +77,7 @@ export default {
                 username: this.username,
                 color: this.selectedColor,
                 partId: 1,
+                submitted: false
             });
 
             const ChatCollectionRef = collection(lobbyRef, 'chat');

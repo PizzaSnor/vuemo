@@ -86,6 +86,7 @@ export default {
                     username: this.username,
                     color: this.selectedColor,
                     partId: participantsLength + 1,
+                    submitted: false
                 });
 
                 this.$router.push(`/Lobby/${this.lobbyId}`);
