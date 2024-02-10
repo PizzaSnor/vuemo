@@ -20,7 +20,7 @@
 
 <script>
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, getDocs, setDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy, updateDoc } from 'firebase/firestore';
 
 import StoryPage from './StoryPage.vue';
 import MainCard from '@/components/Main/MainCard.vue';
@@ -107,11 +107,11 @@ export default {
                     if (this.you) {
                         this.getRounds()
                     } else {
-                        this.yeetBack('/JoinGaminga')
+                        this.yeet('/JoinGaminga')
                     }
                 })
             } else {
-                this.yeetBack('/JoinGaminga')
+                this.yeet('/JoinGaminga')
             }
         },
         async getRounds() {
@@ -201,7 +201,7 @@ export default {
                 this.round = newRound
                 this.syncLobby()
             } else {
-                this.handleViewStories()
+                this.yeet(`/Stories/${this.gameId}`)
             }
         },
         async unsubmitAllParticipants() {
@@ -215,10 +215,7 @@ export default {
                 })
             })
         },
-        async handleViewStories() {
-            console.log("EIndte")
-        },
-        yeetBack(route) {
+        yeet(route) {
             this.$router.push(route)
         }
     }

@@ -68,7 +68,8 @@ export default {
                 creatorUserId: this.userId,
                 canJoin: true,
                 round: 1,
-                roundAmounts: 6
+                roundAmounts: 6,
+                story: 0 
             });
 
             const participantRef = doc(lobbyRef, 'participants', this.userId);
